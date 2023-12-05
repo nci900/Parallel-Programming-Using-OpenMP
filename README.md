@@ -210,7 +210,7 @@ Parallelize this summation by using OpenMP to manually divide (this means you ar
 ### Race Condition and Critical Sections 
 
 <p align="center">
-  <img src="figs/race" alt="Image Description">
+  <img src="figs/race.png" alt="Image Description">
 </p>
 
 A _race condition_ arises when two threads simultaneously access a shared variable. Initially, the first thread reads the variable, and shortly thereafter, the second thread reads the same value from that variable. Subsequently, both the first and second threads carry out their respective operations on the value, and a race ensues to determine which thread can write its value last to the shared variable. The final value preserved in the shared variable is that which is written by the thread that manages to write its value last, effectively overwriting any prior values set by other threads. 
