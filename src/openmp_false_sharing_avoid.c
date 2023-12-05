@@ -7,7 +7,7 @@
 #define N 100
 #define NUM_THREADS 10
 #define NUM_EVENTS 2
-#define CACHE_LINE_SIZE 64
+#define CACHE_LINE_SIZE 16
 
 int main(void) 
 {
