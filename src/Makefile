@@ -14,6 +14,9 @@ all:	openmp_parallel_region openmp_reduction openmp_max_threads papi\
 papi:	papi.c
 	$(CC) $(CFLAGS) -o $@ $? -lpapi
 
+cache:	cache.c
+	$(CC) $(CFLAGS) -o $@ $? -lpapi
+
 openmp_parallel_region:	openmp_parallel_region.c
 	$(CC) $(CFLAGS) -o $@ $? $(LDFLAGS)
 
@@ -106,8 +109,8 @@ exercise5_solution:	exercise5_solution.c
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	/bin/rm -f a.out *.o *~ ompexample[1-6]
-	/bin/rm -f gpuexample[1-6]
+	/bin/rm -f a.out *.o 
+	/bin/rm -f papi cache
 	/bin/rm -f openmp_tasks openmp_depend openmp_datasharing openmp_if openmp_taskgroups openmp_parallel_region
 	/bin/rm -f openmp_simd openmp_parallel_section openmp_max_threads openmp_reduction openmp_master openmp_schedule openmp_single
 	/bin/rm -f openmp_taskloop openmp_tied openmp_sections openmp_nowait openmp_parallel_for openmp_barrier openmp_false_sharing openmp_false_sharing_avoid
