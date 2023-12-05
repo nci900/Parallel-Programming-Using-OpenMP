@@ -268,11 +268,19 @@ Concurrent updated to separate elements within a shared cache line by different 
 
 For instance if Thread T1 changes the data `A[N]` it will make the entire cache line invalid. Which means the data `A[N+1]` and `A[N+2]` also becomes invalid. So, if Threard T2 tries to access `A[N+1]` it will see that the the cache line is invalid and will fetch the data from the memory. This is __false sharing__. 
 
+<p align="center">
+  <img src="figs/cache1.png" alt="Image Description">
+</p>
+
 Some methods to avoid false sharing are:
 * Refrain from modifying global data accessed by multiple threads.
 *  Ensure that shared global data is aligned with cache line boundaries.
 *  Avoid using an array indexed by thread ID or rank to store temporary, thread-specific data.
 * When parallelizing an algorithm, partition data sets along cache lines, rather than across them.
+
+<p align="center">
+  <img src="figs/cache2.png" alt="Image Description">
+</p>
 
 9. The programs [`openmp_false_sharing`](./src/openmp_false_sharing.c) and [`openmp_false_sharing_avoid`](./src/openmp_false_sharing_avoid.c) demonstrates false sharing and a method to avoid it.
 
