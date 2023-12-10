@@ -25,8 +25,6 @@ int main(int argc, char* argv[])
 
     omp_set_num_threads(NT);
 
-	omp_set_num_threads(40);
-
 	double start = omp_get_wtime();
 
 	#pragma omp parallel

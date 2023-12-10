@@ -31,12 +31,19 @@ int main(int argc, char* argv[]) {
 #pragma omp parallel default(none) shared(maxtask) private(mytask,iam) \
  reduction(+:sum)
   {
-    mytask = nxtval();
+    #pragma omp critical
+    {
+      mytask = nxtval();
+    }
     iam = omp_get_thread_num();
     while (mytask < maxtask) {
       // add up the task ids, should be 0+1+2+3....+maxtask-1
       sum += mytask;
-      mytask = nxtval();
+      
+      #pragma omp critical
+      {
+        mytask = nxtval();
+      }
     }
   }
 
@@ -56,8 +63,6 @@ void initval(int iset) {
 }
 
 int nxtval() {
-  // increment counter
-  #pragma omp atomic
   icount++;
   return icount;
 }

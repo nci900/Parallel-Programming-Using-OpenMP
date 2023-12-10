@@ -253,7 +253,7 @@ but the performance would be very poor!
 
 ### Exercise 2
 
-8. The program [`exercise1.c`](./src/exercise1_solution.c) has a race condition. Solve this race condition using the the construct `atomic`. The solutions are availble in [`exercise2_solution.c`](./src/exercise2_solution.c).
+8. The program [`exercise1.c`](./src/exercise1_solution.c) has a race condition. Solve this race condition using the the construct `atomic` or `critical`. The solutions are availble in [`exercise2_solution.c`](./src/exercise2_solution.c).
 
 
 ### False Sharing
