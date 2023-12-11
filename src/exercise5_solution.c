@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <omp.h>
 
 #include "papi.h"
 
@@ -97,6 +98,8 @@ int main(int argc, char *argv[]) {
     exit(1);
   }
 
+  omp_set_num_threads(48);
+
   cholesky(nsize, l);
 
   elp_time(&isec1, &iusec1);
@@ -138,6 +141,7 @@ int main(int argc, char *argv[]) {
  */
 void cholesky(const size_t nsize, double *l) {
   // set upper triangle to zero
+  #pragma omp parallel for
   for (size_t i = 0; i < nsize; i++) {
     for (size_t j = i + 1; j < nsize; j++) {
       l[i * nsize + j] = 0.0;
@@ -146,6 +150,7 @@ void cholesky(const size_t nsize, double *l) {
 
   int num_blocks = (nsize + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
+  #pragma omp parallel for
   for (int k = 0; k < num_blocks; k++) {
     size_t k_height = k < num_blocks - 1
                           ? BLOCK_SIZE
@@ -192,6 +197,8 @@ void cholesky(const size_t nsize, double *l) {
  * @see BLAS dpotrf
  */
 void block_cholesky(const size_t n, double *a, const size_t lda) {
+
+  #pragma omp parallel for
   for (size_t i = 0; i < n; i++) {
     a[i * lda + i] = sqrt(a[i * lda + i]);
     double invd = 1.0 / a[i * lda + i];
@@ -219,6 +226,7 @@ void block_cholesky(const size_t n, double *a, const size_t lda) {
  */
 void block_triangular_solve(const size_t m, const size_t n, const double *a,
                             const size_t lda, double *b, const size_t ldb) {
+  #pragma omp parallel for
   for (size_t k = 0; k < n; k++) {
     double tmp = 1.0 / a[k * lda + k];
     for (size_t i = 0; i < m; i++) {
@@ -248,7 +256,9 @@ void block_triangular_solve(const size_t m, const size_t n, const double *a,
 void block_symmetric_rank_k_update(const size_t n, const size_t k,
                                    const double *a, const size_t lda, double *c,
                                    const size_t ldc) {
+  #pragma omp parallel for
   for (size_t j = 0; j < n; j++) {
+    #pragma omp parallel for
     for (size_t l = 0; l < k; l++) {
       double tmp = a[j * lda + l];
       for (size_t i = j; i < n; i++) {
@@ -274,10 +284,13 @@ void block_symmetric_rank_k_update(const size_t n, const size_t k,
 void block_sub_matrix_mul(const size_t m, const size_t n, const size_t k,
                           const double *a, const size_t lda, const double *b,
                           const size_t ldb, double *c, const size_t ldc) {
-  for (size_t i = 0; i < m; i++)
+  #pragma omp parallel for
+  for (size_t i = 0; i < m; i++) {
+    #pragma omp parallel for
     for (size_t j = 0; j < n; j++)
       for (size_t l = 0; l < k; l++)
         c[i * ldc + j] = c[i * ldc + j] - a[i * lda + l] * b[j * ldb + l];
+  }
 }
 
 /*
