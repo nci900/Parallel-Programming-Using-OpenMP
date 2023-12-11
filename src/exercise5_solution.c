@@ -232,6 +232,7 @@ void block_triangular_solve(const size_t m, const size_t n, const double *a,
     for (size_t i = 0; i < m; i++) {
       b[i * ldb + k] = tmp * b[i * ldb + k];
     }
+    
     for (size_t j = k + 1; j < n; j++) {
       if (a[j * lda + k] != 0.0) {
         double tmp = a[j * lda + k];
@@ -258,11 +259,13 @@ void block_symmetric_rank_k_update(const size_t n, const size_t k,
                                    const size_t ldc) {
   #pragma omp parallel for
   for (size_t j = 0; j < n; j++) {
-    #pragma omp parallel for
-    for (size_t l = 0; l < k; l++) {
-      double tmp = a[j * lda + l];
-      for (size_t i = j; i < n; i++) {
-        c[i * ldc + j] -= tmp * a[i * lda + l];
+    #pragma omp task 
+    {
+      for (size_t l = 0; l < k; l++) {
+        double tmp = a[j * lda + l];
+        for (size_t i = j; i < n; i++) {
+          c[i * ldc + j] -= tmp * a[i * lda + l];
+        }
       }
     }
   }
@@ -286,10 +289,12 @@ void block_sub_matrix_mul(const size_t m, const size_t n, const size_t k,
                           const size_t ldb, double *c, const size_t ldc) {
   #pragma omp parallel for
   for (size_t i = 0; i < m; i++) {
-    #pragma omp parallel for
-    for (size_t j = 0; j < n; j++)
-      for (size_t l = 0; l < k; l++)
-        c[i * ldc + j] = c[i * ldc + j] - a[i * lda + l] * b[j * ldb + l];
+    #pragma omp task 
+    {
+      for (size_t j = 0; j < n; j++)
+        for (size_t l = 0; l < k; l++)
+          c[i * ldc + j] = c[i * ldc + j] - a[i * lda + l] * b[j * ldb + l];
+    }
   }
 }
 
